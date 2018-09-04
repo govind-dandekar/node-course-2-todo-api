@@ -1,5 +1,7 @@
 var express = require('express');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+const {ObjectID} =require('mongodb');
+
 
 var {mongoose} = require('./db/mongoose.js');
 var {User} = require('./models/user.js');
@@ -37,5 +39,30 @@ app.get('/todos', (req, res) => {
     res.status(400).send(e);
   });
 })
+
+// GET /todos/id
+// need to make id part dynamic --
+//create id var on request object by appending :id
+app.get('/todos/:id', (req, res) => {
+  var id = req.params.id;
+
+  console.log('id: ', id);
+
+  if (!ObjectID.isValid(id)){
+    res.status(404).send();
+  } else {
+    Todo.findById(id).then((todo) => {
+      if(!todo){
+        res.status(404).send();
+      } else {
+        res.send({todo});
+      }
+    }, (e) => {
+      res.status(400).send();
+    })
+  }
+
+  //res.send(req.params);
+});
 
 module.exports = {app};
