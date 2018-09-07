@@ -9,6 +9,7 @@ const _ = require('lodash');
 var {mongoose} = require('./db/mongoose.js');
 var {User} = require('./models/user');
 var {Todo} = require('./models/todo');
+var {authenticate} = require('./middleware/authenticate');
 
 var app = express();
 
@@ -135,6 +136,31 @@ app.post('/users', (req, res) =>{
     }).catch((e) => {
       res.status(400).send(e);
     })
+})
+
+
+var authenticate = (req, res, next) => {
+  //actual route won't run until next called in middleware
+  var token = req.header('x-auth'); // get header -
+
+  User.findByToken(token).then((user) => {
+    if (!user) {
+      return Promise.reject();// function will stop and will run error case
+    }
+
+    //modify request object
+    req.user = user;
+    req.token = token;
+    next();
+  }).catch((e) => {
+    res.status(401).send();
+  });
+}
+
+
+app.get('/users/me', authenticate, (req, res) => {
+  //will be private
+  res.send(req.user)
 })
 
 

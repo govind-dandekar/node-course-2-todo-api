@@ -52,6 +52,27 @@ UserSchema.methods.generateAuthToken = function (){
   }) //saves
 };
 
+//.statics -> everythig turns intoa model method
+UserSchema.statics.findByToken = function(token) {
+  //model methods -> model as this binding
+  var User = this;
+
+  var decoded;
+
+  //will throw err is anything goes wrong
+  try{
+    decoded = jwt.verify(token, 'abc123')
+  } catch (e){
+    return Promise.reject();
+  }
+
+  return User.findOne({
+    '_id': decoded._id,
+    'tokens.token': token,
+    'tokens.access': 'auth'
+  });
+};
+
 
 var User = mongoose.model('User', UserSchema);
 
