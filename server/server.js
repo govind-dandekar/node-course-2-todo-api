@@ -119,15 +119,8 @@ app.patch('/todos/:id', (req, res) => {
 // POST /users
 app.post('/users', (req, res) =>{
     //need to return auth token at signup
-
     var body = _.pick(req.body, ['email', 'password'])
     var user = new User(body);
-
-    //model vs instance (User vs user)
-
-    //User.findByToken() //doesn't require single user -> will create (doesn't exist in Mongoose)
-    //user.generateAuthToken(); //add token to the individual user doc -> save -> send to user
-    //need userId, etc
 
     user.save().then(() => {
       return user.generateAuthToken();
@@ -139,23 +132,6 @@ app.post('/users', (req, res) =>{
 })
 
 
-var authenticate = (req, res, next) => {
-  //actual route won't run until next called in middleware
-  var token = req.header('x-auth'); // get header -
-
-  User.findByToken(token).then((user) => {
-    if (!user) {
-      return Promise.reject();// function will stop and will run error case
-    }
-
-    //modify request object
-    req.user = user;
-    req.token = token;
-    next();
-  }).catch((e) => {
-    res.status(401).send();
-  });
-}
 
 
 app.get('/users/me', authenticate, (req, res) => {
