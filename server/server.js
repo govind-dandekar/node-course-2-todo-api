@@ -7,8 +7,8 @@ const _ = require('lodash');
 
 
 var {mongoose} = require('./db/mongoose.js');
-var {User} = require('./models/user.js');
-var {Todo} = require('./models/todo.js');
+var {User} = require('./models/user');
+var {Todo} = require('./models/todo');
 
 var app = express();
 
@@ -113,11 +113,29 @@ app.patch('/todos/:id', (req, res) => {
   }).catch((e) => {
     res.status(400).send();
   })
-
-  //checking completed for true -- set completedAt
-
-
-
 })
+
+// POST /users
+app.post('/users', (req, res) =>{
+    //need to return auth token at signup
+
+    var body = _.pick(req.body, ['email', 'password'])
+    var user = new User(body);
+
+    //model vs instance (User vs user)
+
+    //User.findByToken() //doesn't require single user -> will create (doesn't exist in Mongoose)
+    //user.generateAuthToken(); //add token to the individual user doc -> save -> send to user
+    //need userId, etc
+
+    user.save().then(() => {
+      return user.generateAuthToken();
+    }).then((token) => {
+      res.header('x-auth', token).send(user);
+    }).catch((e) => {
+      res.status(400).send(e);
+    })
+})
+
 
 module.exports = {app};
