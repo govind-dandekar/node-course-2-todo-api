@@ -131,9 +131,6 @@ app.post('/users', (req, res) =>{
     })
 })
 
-
-
-
 app.get('/users/me', authenticate, (req, res) => {
   //will be private
   res.send(req.user)
