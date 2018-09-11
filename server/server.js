@@ -137,11 +137,6 @@ app.get('/users/me', authenticate, (req, res) => {
   res.send(req.user)
 })
 
-//POST /users/login {email, password}
-// find matching email; has hashed password that matched MDB
-// bcypt.compare for password
-//res.send()
-//postmand
 
 app.post('/users/login', (req, res) => {
   var body = _.pick(req.body, ['email', 'password'])
