@@ -1,10 +1,14 @@
 var env = process.env.NODE_ENV || 'development'; //only set on Heroku; maching has 2 dozen variable
 
-if (env === 'development') {
-  // PORT and NODE_ENV and UserID
-  process.env.PORT = 3000;
-  process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoApp'
-} else if (env === 'test') {
-  process.env.PORT = 3000;
-  process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoAppTest' //added new database for mocha
+
+if (env === 'development' || env === 'test'){
+  //load in seperate JSON file -- this file will not be part of git repo
+  //need to set process.env
+  var config = require('./config.json') //automatically parses into JS
+  var envConfig = config[env];
+
+  //loop over env type -- takes keys and returns as array
+  Object.keys(envConfig).forEach((key) => {
+    process.env[key] = envConfig[key];
+  });
 }

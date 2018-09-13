@@ -45,7 +45,7 @@ UserSchema.methods.generateAuthToken = function (){
   var user = this; //gives access to user.f(x) that was called with
 
   var access = 'auth';
-  var token = jwt.sign({_id: user._id.toHexString(), access}, 'abc123').toString(); //returns String token
+  var token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString(); //returns String token
   //data generated; update userStrong Tokens array
   user.tokens = user.tokens.concat([{access, token}]) //update user model
   return user.save().then(() => {
@@ -55,7 +55,7 @@ UserSchema.methods.generateAuthToken = function (){
 
 UserSchema.methods.removeToken = function (token) {
   var user = this;
-  
+
   //console.log(token);
   return user.update({
     $pull: {
@@ -74,7 +74,7 @@ UserSchema.statics.findByToken = function(token) {
 
   //will throw err is anything goes wrong
   try{
-    decoded = jwt.verify(token, 'abc123')
+    decoded = jwt.verify(token, process.env.JWT_SECRET)
   } catch (e){
     return Promise.reject();
   }
