@@ -97,14 +97,7 @@ if (!ObjectID.isValid(id)){
 
 app.patch('/todos/:id', authenticate, (req, res) => {
   var id = req.params.id;
-  //updates will be stored within the body
-  //user can send along properties that aren't part of object or we don't want to update (completedAt)
 
-  //auth as first user-> no further changes
-  //dupe this test and try to update first Todo as the second user (should fail and get 404)
-  //assert 404 response
-
-  //created body var with subset of things
   var body = _.pick(req.body, ['text', 'completed']) //users can only updated two properties
 
   if (!ObjectID.isValid(id)){
@@ -114,6 +107,7 @@ app.patch('/todos/:id', authenticate, (req, res) => {
   //set completedAt
   if (_.isBoolean(body.completed) && body.completed){
     body.completedAt = new Date().getTime(); //returns JS timestamp -- MS from Jan 1 1970
+    
   } else {
     //when update makes the boolean false
     body.completed = false;
